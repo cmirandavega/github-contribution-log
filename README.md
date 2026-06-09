@@ -3,7 +3,7 @@
 # Contribution 1: Bug: externalUrl field validation rejects valid relative URLs
  
 **Contribution Number:** 1  
-**Student:** [Your Name]  
+**Student:** Christopher Miranda Vega  
 **Issue:** https://github.com/saleor/saleor/issues/18012  
 **Status:** Phase I — In Progress
  
