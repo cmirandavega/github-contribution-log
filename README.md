@@ -5,7 +5,7 @@
 **Contribution Number:** 1  
 **Student:** Christopher Miranda Vega  
 **Issue:** https://github.com/saleor/saleor/issues/18012  
-**Status:** Phase I — In Progress
+**Status:** Phase I — Completed, Phase II - IP
  
 ---
  
