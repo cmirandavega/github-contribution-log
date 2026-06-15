@@ -44,14 +44,16 @@ Saleor logs a warning and rejects the input with: `"Input should be a valid URL,
  
 ### Steps to Reproduce
  
-1. [Step 1]
-2. [Step 2]
-3. [Observed result]
+1. Set up a Saleor instance locally using Docker (`docker compose up`)
+2. Create a checkout using the dummy payment method
+3. Select a delivery method for the checkout
+4. Initialize a transaction via the `TransactionCreate` mutation, passing a relative URL as the `externalUrl` value — for example: `"/dashboard/apps/QXBwOjI=/app/app/transactions/75ad3453-fddb-4e32-abf9-2804702e4fe0"`
+5. Observe that Saleor logs a warning and rejects the input: `"Input should be a valid URL, relative URL without a base."`
 ### Reproduction Evidence
  
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
+- **Commit showing reproduction:** (https://github.com/cmirandavega/saleor/tree/fix-issue-18012)
+- **Screenshots/logs:** [If applicable] IP 
+- **My findings:** [What you discovered during reproduction] IP 
 
 ---
  
