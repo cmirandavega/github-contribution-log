@@ -61,31 +61,36 @@ Saleor logs a warning and rejects the input with: `"Input should be a valid URL,
  
 ### Analysis
  
-[Your analysis of the root cause - what's causing the issue?]
+The root cause is in the `TransactionCreate` mutation's input validation for the `externalUrl` field. The validation relies on Django's built-in `URLValidator`, which is designed to only accept absolute URLs containing a scheme (e.g. `https://`) and a host. When a relative URL like `/dashboard/apps/QXBwOjI=/app/app/transactions/...` is passed in, Django's validator rejects it immediately because it has no scheme or host — even though the URL is perfectly valid per RFC 3986, which explicitly allows relative paths starting with `/`. The `=` character in Base64-encoded path segments makes this worse, as it further confuses the validator.
  
 ### Proposed Solution
  
-[High-level description of your fix approach]
+Update the `externalUrl` validation logic in `saleor/graphql/payment/mutations/transaction/transaction_create.py` to handle relative URLs as a separate case. Before passing the value to Django's `URLValidator`, add a check: if the value starts with `/`, validate it against a regex that accepts valid URI path characters per RFC 3986 instead. If it does not start with `/`, continue using the existing `URLValidator` as before. This approach is minimal, targeted, and avoids changing behavior for absolute URLs.
  
 ### Implementation Plan
  
 sing UMPIRE framework (adapted):
 
-**Understand:** [Restate the problem]
+**Understand:** The `TransactionCreate` mutation rejects valid relative URLs passed as `externalUrl` because the underlying validator uses Django's `URLValidator`, which only accepts absolute URLs with a scheme and host. Relative URLs starting with `/` are valid per RFC 3986 but get rejected, causing the transaction flow to fail.
 
-**Match:** [What similar patterns/solutions exist in the codebase?]
+**Match:** The validation lives in `saleor/graphql/payment/mutations/transaction/transaction_create.py`. The pattern to follow is how other validators in the codebase handle conditional logic — check the input type first, then apply the appropriate validation. A similar URL validation fix was done in `saleor/core/utils/url.py` for the `validate_storefront_url` function (issue #8556).
 
 **Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
+1. Locate the `externalUrl` validation logic in `saleor/graphql/payment/mutations/transaction/transaction_create.py`
+2. Add a pre-check: if the value starts with `/`, validate it as a relative path using a regex for valid URI path characters per RFC 3986 instead of passing to Django's `URLValidator`
+3. If the value does not start with `/`, continue using the existing `URLValidator` as before
+4. Add unit tests in `saleor/graphql/payment/tests/mutations/transaction/test_transaction_create.py` covering valid relative URLs, valid absolute URLs, and invalid inputs
 
-**Implement:** [Link to your branch/commits as you work]
 
-**Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
+**Implement:** (https://github.com/cmirandavega/saleor/tree/fix-issue-18012)
 
-**Evaluate:** [How will you verify it works?]
+**Review:** Before submitting the PR I will verify:
+- Commit message is under 50 characters and uses imperative form (e.g. `fix: allow relative URLs in externalUrl validation`)
+- A changelog entry is added under `Unreleased → Other changes` in `CHANGELOG.md`
+- The change does not introduce new validation restrictions (not a breaking change per Saleor's guidelines)
+- Pre-commit hooks pass (`uv run pre-commit run --all-files`)
 
+**Evaluate:** Run `uv run poe test saleor/graphql/payment/tests/mutations/transaction/test_transaction_create.py` to confirm new tests pass. Manually verify by running the `transactionCreate` mutation with the failing relative URL from the issue and confirming it no longer returns `"Invalid format of externalUrl."`
 ---
  
 ## Testing Strategy
