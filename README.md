@@ -52,8 +52,8 @@ Saleor logs a warning and rejects the input with: `"Input should be a valid URL,
 ### Reproduction Evidence
  
 - **Commit showing reproduction:** (https://github.com/cmirandavega/saleor/tree/fix-issue-18012)
-- **Screenshots/logs:** [If applicable] IP 
-- **My findings:** [What you discovered during reproduction] IP 
+- **Screenshots/logs:** [<img width="1913" height="907" alt="Screenshot 2026-06-17 205838" src="https://github.com/user-attachments/assets/f6bbb41a-c63c-4e14-978d-74c04ce8a0e8" />] 
+- **My findings:** Running the TransactionCreate mutation with a relative externalUrl value containing = characters returns "Invalid format of externalUrl." — confirming that Saleor's validation rejects valid relative URLs. The bug is reproducible locally and matches the behavior described in the issue. 
 
 ---
  
