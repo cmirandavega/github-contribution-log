@@ -104,8 +104,6 @@ Using UMPIRE framework (adapted):
 
 ### Integration Tests
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
 No integration tests were written for this fix. The change is contained to a single validation method and is fully covered by unit tests.
 ### Manual Testing
 
