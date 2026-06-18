@@ -90,7 +90,8 @@ sing UMPIRE framework (adapted):
 - The change does not introduce new validation restrictions (not a breaking change per Saleor's guidelines)
 - Pre-commit hooks pass (`uv run pre-commit run --all-files`)
 
-**Evaluate:** Run `uv run poe test saleor/graphql/payment/tests/mutations/transaction/test_transaction_create.py` to confirm new tests pass. Manually verify by running the `transactionCreate` mutation with the failing relative URL from the issue and confirming it no longer returns `"Invalid format of externalUrl."`
+**Evaluate:** 
+Run `uv run poe test saleor/graphql/payment/tests/mutations/transaction/test_transaction_create.py` to confirm new tests pass. Manually verify by running the `transactionCreate` mutation with the failing relative URL from the issue and confirming it no longer returns `"Invalid format of externalUrl."`
 ---
  
 ## Testing Strategy
