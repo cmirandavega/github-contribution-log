@@ -5,7 +5,7 @@
 **Contribution Number:** 1  
 **Student:** Christopher Miranda Vega  
 **Issue:** https://github.com/saleor/saleor/issues/18012  
-**Status:** Phase I — Completed, Phase II - Completed, Phase III - Completed, Phase IV - Awaiting Response
+**Status:** Phase I — Completed, Phase II - Completed, Phase III - Completed, Phase IV - Closed
  
 ---
  
@@ -140,10 +140,11 @@ the TransactionCreate mutation to fail for apps that use relative externalUrls.
 Fixes #18012
 
 **Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
-
-**Status:** Awaiting review
+- June 19, 2026: Maintainer (wcislo-saleor) questioned the use case — asked why relative URLs would be needed given that externalUrl is designed to point to external payment providers like Stripe, and noted that apps should know their own dashboard URL and could use an absolute URL instead.
+- June 20, 2026: Responded explaining the original reporter's use case and deferred to the maintainer's judgment.
+- June 23, 2026: Maintainer confirmed relative URLs are out of scope by design and suggested the app use an absolute URL instead.
+- June 24, 2026: Responded acknowledging the design intent and asked whether issue #18012 should be closed as won't fix.
+**Status:** Closed
 
 ---
  
@@ -151,30 +152,32 @@ Fixes #18012
  
 ### Technical Skills Gained
  
-Django's URL validation internals — learned that URLValidator only accepts absolute URLs and why, which led you to understand how to extend validation logic conditionally
-RFC 3986 — I now understand what makes a URL valid at the spec level, not just in practice
-GraphQL mutations in Django — I navigated a real production GraphQL mutation, understood how input validation is structured, and traced an error from the API layer down to a specific function
-Regex for input validation — I wrote and tested a fullmatch regex for URI path characters, understanding why fullmatch is safer than match or search
-pytest in a large codebase — I learned how to write tests that follow an existing project's fixtures and conventions rather than starting from scratch
-Docker + WSL2 local dev setup — I set up a full multi-container development environment on Windows, working through real permission and filesystem issues
-Open source contribution workflow — forking, branching, committing with proper messages, writing a PR description that links to an issue, and adding a changelog entry
+- Django's URL validation internals — learned that URLValidator only accepts absolute URLs and why, which led you to understand how to extend validation logic conditionally
+- RFC 3986 — I now understand what makes a URL valid at the spec level, not just in practice
+- GraphQL mutations in Django — I navigated a real production GraphQL mutation, understood how input validation is structured, and traced an error from the API layer down to a specific function
+- Regex for input validation — I wrote and tested a fullmatch regex for URI path characters, understanding why fullmatch is safer than match or search
+- pytest in a large codebase — I learned how to write tests that follow an existing project's fixtures and conventions rather than starting from scratch
+- Docker + WSL2 local dev setup — I set up a full multi-container development environment on Windows, working through real permission and filesystem issues
+- Open source contribution workflow — forking, branching, committing with proper messages, writing a PR description that links to an issue, and adding a changelog entry
+- Open source design intent vs. bug reports — learned that not every reported issue represents a bug from the project's perspective; maintainers evaluate changes against intentional design decisions, not just technical correctness.
  
 ### Challenges Overcome
  
-WSL2 and Docker permissions — Docker wasn't connected to WSL2 and the socket wasn't accessible. Solved by enabling WSL2 integration in Docker Desktop settings and using sudo for Docker commands.
-Working across two filesystems — the repo was cloned to /mnt/c/... (Windows filesystem) which caused uv package installation to fail with permission errors. Solved by copying the project to ~/saleor (WSL2 native filesystem) and running all commands from there.
-Broken virtual environment — moving the project broke the .venv paths and several packages had corrupted installs. Solved by deleting .venv entirely and running uv sync from scratch.
-HANDLE_PAYMENTS permission — the GraphQL playground kept returning a permission denied error even after granting superuser access. Solved by creating an App token with the permission directly assigned, which bypasses JWT-based permission checks.
-Reproducing the bug — needed a valid checkout ID and app-level auth to trigger the mutation. Worked through creating a checkout, generating an app token, and setting the Authorization header correctly.
-Locating the fix — the issue pointed to payment/utils.py but the actual validation lives in transaction_create.py. Solved by using Claude in VS Code to trace the error through the codebase.
+- WSL2 and Docker permissions — Docker wasn't connected to WSL2 and the socket wasn't accessible. Solved by enabling WSL2 integration in Docker Desktop settings and using sudo for Docker commands.
+- Working across two filesystems — the repo was cloned to /mnt/c/... (Windows filesystem) which caused uv package installation to fail with permission errors. Solved by copying the project to ~/saleor (WSL2 native filesystem) and running all commands from there.
+- Broken virtual environment — moving the project broke the .venv paths and several packages had corrupted installs. Solved by deleting .venv entirely and running uv sync from scratch.
+- HANDLE_PAYMENTS permission — the GraphQL playground kept returning a permission denied error even after granting superuser access. Solved by creating an App token with the permission directly assigned, which bypasses JWT-based permission checks.
+- Reproducing the bug — needed a valid checkout ID and app-level auth to trigger the mutation. Worked through creating a checkout, generating an app token, and setting the Authorization header correctly.
+- Locating the fix — the issue pointed to payment/utils.py but the actual validation lives in transaction_create.py. Solved by using Claude in VS Code to trace the error through the codebase.
  
 ### What I'd Do Differently Next Time
  
-Clone directly into the WSL2 filesystem from the start — working from /mnt/c/... caused filesystem permission issues that took significant time to debug. Starting in ~/ would have avoided all of it.
-Set up the app token authentication before trying to reproduce the bug — a lot of time was spent fighting JWT permission errors. Knowing upfront that Saleor requires app-level tokens for payment mutations would have saved several debugging cycles.
-Read the full CONTRIBUTING.md before starting — some steps like adding the CHANGELOG entry and pre-commit hooks were discovered late. Reading it end to end first would have made the workflow smoother.
-Verify the exact file location of the bug before writing the plan — the issue pointed to payment/utils.py but the actual fix was in transaction_create.py. Tracing the error in the codebase first would have made the implementation plan more accurate from the start.
-Fork and sync with upstream before branching — the PR initially included unrelated upstream commits because the fork was out of sync. Syncing first would have kept the PR clean from the start.
+- Clone directly into the WSL2 filesystem from the start — working from /mnt/c/... caused filesystem permission issues that took significant time to debug. Starting in ~/ would have avoided all of it.
+- Set up the app token authentication before trying to reproduce the bug — a lot of time was spent fighting JWT permission errors. Knowing upfront that Saleor requires app-level tokens for payment mutations would have saved several debugging cycles.
+- Read the full CONTRIBUTING.md before starting — some steps like adding the CHANGELOG entry and pre-commit hooks were discovered late. Reading it end to end first would have made the workflow smoother.
+- Verify the exact file location of the bug before writing the plan — the issue pointed to payment/utils.py but the actual fix was in transaction_create.py. Tracing the error in the codebase first would have made the implementation plan more accurate from the start.
+- Fork and sync with upstream before branching — the PR initially included unrelated upstream commits because the fork was out of sync. Syncing first would have kept the PR clean from the start.
+- Research the intended purpose of the field before implementing a fix — understanding that externalUrl was designed specifically for external payment providers would have helped evaluate whether the issue was worth pursuing before investing time in the full implementation.
  
 ---
  
